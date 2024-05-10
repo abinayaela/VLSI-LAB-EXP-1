@@ -1,9 +1,24 @@
 # VLSI-LAB-EXPERIMENTS
-AIM: To simulate and synthesis Logic Gates,Adders and Subtractor using Xilinx ISE.
+AIM:
+To simulate and synthesis Logic Gates,Adders and Subtractor using vivado 2023.2.
 
-APPARATUS REQUIRED: Xilinx 14.7 Spartan6 FPGA
+APPARATUS REQUIRED: 
+vivado 2023.2
 
-PROCEDURE: STEP:1 Start the Xilinx navigator, Select and Name the New project. STEP:2 Select the device family, device, package and speed. STEP:3 Select new source in the New Project and select Verilog Module as the Source type. STEP:4 Type the File Name and Click Next and then finish button. Type the code and save it. STEP:5 Select the Behavioral Simulation in the Source Window and click the check syntax. STEP:6 Click the simulation to simulate the program and give the inputs and verify the outputs as per the truth table. STEP:7 Select the Implementation in the Sources Window and select the required file in the Processes Window. STEP:8 Select Check Syntax from the Synthesize XST Process. Double Click in the Floorplan Area/IO/Logic-Post Synthesis process in the User Constraints process group. UCF(User constraint File) is obtained. STEP:9 In the Design Object List Window, enter the pin location for each pin in the Loc column Select save from the File menu. STEP:10 Double click on the Implement Design and double click on the Generate Programming File to create a bitstream of the design.(.v) file is converted into .bit file here. STEP:12 Load the Bit file into the SPARTAN 6 FPGA STEP:11 On the board, by giving required input, the LEDs starts to glow light, indicating the output.
+PROCEDURE: 
+STEP:1 Start the vivado software, Select and Name the New project.
+
+STEP:2 Select the device family, device, package and speed.
+
+STEP:3 Select new source in the New Project and select Verilog Module as the Source type.
+
+STEP:4 Type the File Name and module name and Click Next and then finish button. Type the code and save it.
+
+STEP:5 Select the run simulation adn then run Behavioral Simulation in the Source Window and click the check syntax.
+
+STEP:6 Click the simulation to simulate the program and give the inputs and verify the outputs as per the truth table.
+
+STEP:7 compare the output with truth table.
 
 Logic Diagram :
 
@@ -41,134 +56,170 @@ Full Subtractor:
 
 VERILOG CODE
 # logic gates
-```
-module logicgate (a,b,andgate,orgate,xorgate,nandgate,norgate,xnorgate,notgate);
-input a,b;  
+module logic(a,b,andgate,orgate,xorgate,nandgate,norgate,xnorgate,notgate );
+
+input a,b;
+
 output andgate,orgate,xorgate,nandgate,norgate,xnorgate,notgate;
+
 and(andgate,a,b);
+
 or(orgate,a,b);
+
 xor(xorgate,a,b);
-nand(nandgate,a,b); 
+
+nand(nandgate,a,b);
+
 nor(norgate,a,b);
+
 xnor(xnorgate,a,b);
+
 not(notgate,a);
+
 endmodule
-```
+
 # half adder
-```
-module ha(a,b,sum,carry);
+module HalfAdder(a,b,sum,carry);
+
 input a,b;
+
 output sum,carry;
+
+xor (sum,a,b);
+
+and (carry,a,b);
+
 endmodule
-module multi_2(a,b,p,carry);
-input [1:0]a,b;
-output [2:0]p;
-output carry;
-endmodule
-```
+
 # half subtractor
-```
 module halfsubtractor(a,b,diff,borrow);
+
 input a,b;
+
 output diff,borrow;
+
 xor g1(diff,a,b);
+
 and g2(borrow,~a,b);
+
 endmodule
-```
 # full adder 
-```
-module fadd(a,b,c,sum,carry);
-input a,b,c;
-output sum,carry;
+module FA(a,b,cin,sum,cout);
+
+input a,b,cin;
+
+output sum,cout;
+
 wire w1,w2,w3;
+
 xor g1(w1,a,b);
-and g2(w2,a,b);
-xor g3(sum,w1,c);
-and g4(w3,w1,c);
-or g5(carry,w3,w2);
+
+and g2(w2,w1,cin);
+
+and g3(w3,a,b);
+
+xor g4(sum,w1,cin);
+
+or g5(cout,w2,w3);
+
 endmodule
-```
 # full subtractor 
-```
-module fs(a,b,bin,d,bout);
-input a,b,bin; 
-output d,bout;
+module full_sub(a,b,bin,diff,borrow);
+
+input a,b,bin;
+
+output diff,borrow;
+
 wire w1,w2,w3;
-xor g1(w1,b,bin; 
-xor g2(d,w1,a);
-and g3(w2,a,~w1);
-and g4(w3,~b,bin);
-or g5(bout,w2,w3);
+
+xor g1(w1,a,bin);
+
+and g2(w2,~a,b);
+
+xor g3(diff,w1,bin);
+
+or g4(borrow,w2,w3);
+
+and g5(w3,~w1,bin);
+
 endmodule
-```
+
 # ripple adder 
-```
-module ripplemod(a, b, cin, sum, cout);
-input [07:0] a;
-input [07:0] b;
+
+module fa(a,b,c,sum,carry);
+
+input a,b,c;
+
+output sum,carry;
+
+assign sum = a^b^c;
+
+assign carry=(a&b)|(b&c)|(c&a);
+
+endmodule
+
+module rca(a,b,cin,sum,cout);
+
+input [7:0]a,b;
+
 input cin;
+
 output [7:0]sum;
+
 output cout;
-wire[6:0] c;
-fulladd a1(a[0],b[0],cin,sum[0],c[0]);
-fulladd a2(a[1],b[1],c[0],sum[1],c[1]);
-fulladd a3(a[2],b[2],c[1],sum[2],c[2]);
-fulladd a4(a[3],b[3],c[2],sum[3],c[3]);
-fulladd a5(a[4],b[4],c[3],sum[4],c[4]);
-fulladd a6(a[5],b[5],c[4],sum[5],c[5]);
-fulladd a7(a[6],b[6],c[5],sum[6],c[6]);
-fulladd a8(a[7],b[7],c[6],sum[7],cout);
+
+wire c1,c2,c3,c4,c5,c6,c7;
+
+fa fa1(a[0],b[0],cin,sum[0],c1);
+
+fa fa2(a[1],b[1],c1,sum[1],c2);
+
+fa fa3(a[2],b[2],c2,sum[2],c3);
+
+fa fa4(a[3],b[3],c3,sum[3],c4);
+
+fa fa5(a[4],b[4],c4,sum[4],c5);
+
+fa fa6(a[5],b[5],c5,sum[5],c6);
+
+fa fa7(a[6],b[6],c6,sum[6],c7);
+
+fa fa8(a[7],b[7],c7,sum[7],cout);
+
 endmodule
-module fulladd(a, b, cin, sum, cout);
-input a;
-input b;
-input cin;
-output sum;
-output cout;
-assign sum=(a^b^cin);
-assign cout=((a&b)|(b&cin)|(a&cin));
-endmodule
-```
 
 
 
 OUTPUT
-AND GATE
-![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/058cddf7-0493-42f9-8576-0279fdf6446e)
-OR GATE
+LOGIC GATES
+![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/3bc37257-f7d6-4b7d-a449-f7f0ef08ed37)
 
-![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/75a71393-5b20-452a-bc0d-9abcab9e3984)
-NAND GATE
 
-![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/6c7ab43f-c1b0-4384-a9a5-ac243a380f89)
-NOR GATE
-
-![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/1b095885-5b54-4807-a907-2d70a3467473)
-XOR GATE
-
-![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/89a52acf-0fe7-463c-a1f4-2cc0381b38e2)
-XNOR GATE
-
-![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/d35dabe8-2eb1-4e7d-bba8-6ceb0c93524a)
-NOT GATE
-
-![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/87506908-7e40-4e93-b885-e0aa45866f88)
 HALF ADDER
+![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/f33a8eeb-5b63-48b9-95d5-3355c4dc7294)
 
-![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/261b9ae9-03e0-42ab-b26a-73b79894bf36)
+
 HALF SUBTRACTOR
+![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/9acc5eac-7b7d-4588-93fa-1a9142bdf4ce)
 
-![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/b8e72d88-54c2-4b78-9012-e9e24170aa06)
+
 FULL ADDER 
+![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/428af092-4cec-4a6f-a552-f967c73252a6)
 
-![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/db531338-b7e0-40ad-bd21-9de6246cc460)
+
+
 FULL SUBTRACTOR 
+![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/a1a2ea64-7e6d-452d-8862-554efd71a8f1)
 
-![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/fe1e3b31-b3ed-41e1-91f3-34a090a312e8)
+
+
 RIPPLE ADDER 
+![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/10641778-6e01-41e7-88ed-cea08306d265)
 
-![image](https://github.com/abinayaela/VLSI-LAB-EXP-1/assets/164911294/57540d99-2b22-42fe-a5d6-d8b96f1b4ed9)
+
 
 RESULT:
-Hence Logic Gates,Adders and Subtractor are simulated and synthesised using Xilinx ISE.
+Thus the simulation and synthesis of Logic Gates,Adders and Subtractors using vivado has been sucessfully executed and verified .
+
+
 
